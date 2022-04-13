@@ -1,18 +1,17 @@
-
 export const defaultConfiguration = {
-    titleClosed: 'Click to chat!',
-    titleOpen: 'Let\'s chat!',
-    closedStyle: 'chat', // button or chat
-    closedChatAvatarUrl: '', // only used if closedStyle is set to 'chat'
-    cookieExpiration: 1, // in days. Once opened, closed chat title will be shown as button (when closedStyle is set to 'chat')
-    introMessage: 'Hello! How can we help you?',
-    autoResponse: 'Looking for the first available admin (It might take a minute)',
-    autoNoResponse: 'It seems that no one is available to answer right now. Please tell us how we can ' +
-    'contact you, and we will get back to you as soon as we can.',
-    placeholderText: 'Send a message...',
-    displayMessageTime: true,
-    mainColor: '#1f8ceb',
-    alwaysUseFloatingButton: false,
-    desktopHeight: 450,
-    desktopWidth: 370
+  titleClosed: 'Re-open chat',
+  titleOpen: 'Ask me anything',
+  closedStyle: 'button', // button or chat
+  cookieExpiration: 1, // in days. Once opened, closed chat title will be shown as button (when closedStyle is set to 'chat')
+  introMessage: 'Hi! How can we help you?',
+  introMessageBalloon: 'Hi! How can we help?',
+  closedChatAvatarUrl: 'https://swetrix.com/assets/andrii-120px.png',
+  autoResponse: 'Looking for Andrii (this might take a minute)',
+  autoNoResponse: 'He doesn\'t seem to answer within a minute. This chat is anonymous, so please leave your email address to be contacted as soon as possible.',
+  placeholderText: 'Send a message...',
+  displayMessageTime: true,
+  mainColor: '#4F46E5',
+  alwaysUseFloatingButton: false,
+  desktopHeight: 450,
+  desktopWidth: 300,
 };

@@ -2,4 +2,7 @@
 
 ## Description
 
-The Swetrix Analytics chat wigdet - [Intergram](https://github.com/idoco/intergram) fork 
+The Swetrix Analytics chat wigdet.\
+Based on [Intergram](https://github.com/idoco/intergram) and [SimpleAnalytics](https://github.com/simpleanalytics/chat) fork.\
+Feel free to open an issue in case if you found a bug or want to propose something.\
+Pull requests are appreciated!

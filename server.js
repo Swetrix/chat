@@ -1,98 +1,119 @@
-const request = require('request');
-const compression = require('compression');
-const cors = require('cors');
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const request = require('request')
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const http = require('http').Server(app)
+const io = require('socket.io')(http)
 
-app.use(express.static('dist', {index: 'demo.html', maxage: '4h'}));
-app.use(bodyParser.json());
+app.use(express.static('dist', { index: 'demo.html', maxage: '4h' }))
+app.use(bodyParser.json())
 
-// handle admin Telegram messages
-app.post('/hook', function(req, res){
-    try {
-        const message = req.body.message || req.body.channel_post;
-        const chatId = message.chat.id;
-        const name = message.chat.first_name || message.chat.title || "admin";
-        const text = message.text || "";
-        const reply = message.reply_to_message;
+const { TELEGRAM_TOKEN, TELEGRAM_CHAT_ID, PORT } = process.env
 
-        if (text.startsWith("/start")) {
-            console.log("/start chatId " + chatId);
-            sendTelegramMessage(chatId,
-                "*Welcome to Intergram* \n" +
-                "Your unique chat id is `" + chatId + "`\n" +
-                "Use it to link between the embedded chat and this telegram chat",
-                "Markdown");
-        } else if (reply) {
-            let replyText = reply.text || "";
-            let userId = replyText.split(':')[0];
-            io.to(userId).emit(chatId + "-" + userId, {name, text, from: 'admin'});
-        } else if (text){
-            io.emit(chatId, {name, text, from: 'admin'});
-        }
+const sessions = {}
+const buffer = {}
 
-    } catch (e) {
-        console.error("hook error", e, req.body);
-    }
-    res.statusCode = 200;
-    res.end();
-});
+const sendTelegramMessage = (chatId, text, parseMode, disableNotification = false) => {
+  const data = {
+    disable_notification: disableNotification,
+    chat_id: chatId,
+    text,
+  }
+  if (parseMode) data.parse_mode = parseMode
 
-// handle chat visitors websocket messages
-io.on('connection', function(socket){
-
-    socket.on('register', function(registerMsg){
-        let userId = registerMsg.userId;
-        let chatId = registerMsg.chatId;
-        let messageReceived = false;
-        socket.join(userId);
-        console.log("useId " + userId + " connected to chatId " + chatId);
-
-        socket.on('message', function(msg) {
-            messageReceived = true;
-            io.to(userId).emit(chatId + "-" + userId, msg);
-            let visitorName = msg.visitorName ? "[" + msg.visitorName + "]: " : "";
-            sendTelegramMessage(chatId, userId + ":" + visitorName + " " + msg.text);
-        });
-
-        socket.on('disconnect', function(){
-            if (messageReceived) {
-                sendTelegramMessage(chatId, userId + " has left");
-            }
-        });
-    });
-
-});
-
-function sendTelegramMessage(chatId, text, parseMode) {
-    request
-        .post('https://api.telegram.org/bot' + process.env.TELEGRAM_TOKEN + '/sendMessage')
-        .form({
-            "chat_id": chatId,
-            "text": text,
-            "parse_mode": parseMode
-        });
+  request
+    .post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`)
+    .form(data)
+    .on('error', console.error)
 }
 
-app.post('/usage-start', cors(), function(req, res) {
-    console.log('usage from', req.query.host);
-    res.statusCode = 200;
-    res.end();
-});
+// Handle admin Telegram messages
+app.post('/hook', (req, res) => {
+  try {
+    const message = req.body.message || req.body.channel_post
+    let name = 'Andrii' // message.from.first_name || message.chat.first_name
+    const text = message.text || ''
+    const reply = message.reply_to_message
 
-// left here until the cache expires
-app.post('/usage-end', cors(), function(req, res) {
-    res.statusCode = 200;
-    res.end();
-});
+    if (text.startsWith('/start')) { // init
+      sendTelegramMessage(
+        TELEGRAM_CHAT_ID,
+        '*Welcome to Intergram* \n' +
+          'Your unique chat id is `' +
+          TELEGRAM_CHAT_ID +
+          '`\n' +
+          'Use it to link between the embedded chat and this telegram chat',
+        'Markdown'
+      )
+    } else if (reply) { // reply to a specific user
+      let replyText = reply.text || ''
+      let userId = replyText.split(':')[0]
+      const socketId = sessions[userId]
 
-http.listen(process.env.PORT || 3000, function(){
-    console.log('listening on port:' + (process.env.PORT || 3000));
-});
+      if (socketId) {
+        io.to(socketId).emit(TELEGRAM_CHAT_ID + '-' + userId, {
+          name,
+          text,
+          from: 'admin',
+        })
+      } else {
+        if (!buffer[userId]) {
+          buffer[userId] = []
+        }
 
-app.get("/.well-known/acme-challenge/:content", (req, res) => {
-    res.send(process.env.CERTBOT_RESPONSE);
-});
+        buffer[userId].unshift({
+          TELEGRAM_CHAT_ID,
+          name,
+          text,
+          from: 'admin',
+          adminName: name,
+        })
+      }
+    } else if (text) { // broadcast message to all users
+      // io.emit(chatId, {name, text, from: 'admin'})
+    }
+  } catch (e) {
+    console.error('hook error', e, req.body)
+  }
+  res.statusCode = 200
+  res.end()
+})
+
+// Handle chat visitors websocket messages
+io.on('connection', (socket) => {
+  socket.on('register', (registerMsg) => {
+    let userId = registerMsg.userId
+    let chatId = registerMsg.chatId
+
+    sessions[userId] = socket.id
+
+    if (buffer[userId]) {
+      const buffered = buffer[userId]
+      let msg = buffered.pop()
+      while (msg) {
+        const { chatId, name, text, from, adminName } = msg
+        io.to(socket.id).emit(chatId + '-' + userId, {
+          name,
+          text,
+          from,
+          adminName,
+        })
+        msg = buffered.pop()
+      }
+      delete buffer[userId]
+    }
+
+    socket.on('message', (msg) => {
+      if (msg.from !== 'bot') io.to(socket.id).emit(chatId + '-' + userId, msg)
+      sendTelegramMessage(chatId, `${userId}: ${msg.text}`)
+    })
+
+    socket.on('disconnect', () => {
+      delete sessions[userId]
+    })
+  })
+})
+
+http.listen(PORT || 3002, () => {
+  console.log(`Chat listening on port: ${PORT || 3002}`)
+})

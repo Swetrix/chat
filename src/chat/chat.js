@@ -4,10 +4,14 @@ import io from 'socket.io-client'
 import { h, Component } from 'preact';
 import MessageArea from './message-area';
 
+// after what time of no response should we display a 'No response' message? (in seconds)
+const NO_RESPONSE_TIMER = 60
+
 export default class Chat extends Component {
 
     autoResponseState = 'pristine'; // pristine, set or canceled
     autoResponseTimer = 0;
+    didSentIsTyping = false;
 
     constructor(props) {
         super(props);
@@ -32,26 +36,26 @@ export default class Chat extends Component {
         }
     }
 
-    render({},state) {
+    render({ isMobile }, state) {
         return (
-            <div>
+            <div class={isMobile ? 'is-mobile' : 'is-desktop'}>
                 <MessageArea messages={state.messages} conf={this.props.conf}/>
 
                 <input class="textarea" type="text" placeholder={this.props.conf.placeholderText}
                        ref={(input) => { this.input = input }}
                        onKeyPress={this.handleKeyPress}/>
-
-                <a class="banner" href="https://github.com/idoco/intergram" target="_blank">
-                    Powered by <b>Intergram</b>&nbsp;
-                </a>
             </div>
         );
     }
 
     handleKeyPress = (e) => {
+        if (!this.didSentIsTyping && this.input.value) {
+            this.socket.send({text: 'Started typing', from: 'bot'})
+            this.didSentIsTyping = true
+        }
         if (e.keyCode == 13 && this.input.value) {
             let text = this.input.value;
-            this.socket.send({text, from: 'visitor', visitorName: this.props.conf.visitorName});
+            this.socket.send({text, from: 'visitor'});
             this.input.value = '';
 
             if (this.autoResponseState === 'pristine') {
@@ -65,7 +69,8 @@ export default class Chat extends Component {
                 this.autoResponseTimer = setTimeout(() => {
                     this.writeToMessages({
                         text: this.props.conf.autoNoResponse,
-                        from: 'admin'});
+                        from: 'admin'
+                    });
                     this.autoResponseState = 'canceled';
                 }, 60 * 1000);
                 this.autoResponseState = 'set';
@@ -76,7 +81,7 @@ export default class Chat extends Component {
     incomingMessage = (msg) => {
         this.writeToMessages(msg);
         if (msg.from === 'admin') {
-            document.getElementById('messageSound').play();
+            // document.getElementById('messageSound').play();
 
             if (this.autoResponseState === 'pristine') {
                 this.autoResponseState = 'canceled';
