@@ -12,7 +12,6 @@ import {
 } from './style';
 
 export default class Widget extends Component {
-
     constructor() {
         super();
         this.state.isChatOpen = false;
@@ -20,11 +19,9 @@ export default class Widget extends Component {
         this.state.wasChatOpened = this.wasChatOpened();
     }
 
-    render({conf, isMobile}, {isChatOpen, pristine}) {
-
+    render({ conf, isMobile }, { isChatOpen, pristine }) {
         const wrapperWidth = {width: conf.desktopWidth};
         const desktopHeight = (window.innerHeight - 100 < conf.desktopHeight) ? window.innerHeight - 90 : conf.desktopHeight;
-        const wrapperHeight = {height: desktopHeight};
 
         let wrapperStyle;
         if (!isChatOpen && (isMobile || conf.alwaysUseFloatingButton)) {

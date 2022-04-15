@@ -39,7 +39,7 @@ export default class ChatTitleMsg extends Component {
                 <div
                     className="desktop-closed-message-avatar"
                     style={{
-                        background: '#FF4F64',
+                        background: '#4F46E5',
                         display: 'block',
                         position: 'absolute',
                         top: '10px',
