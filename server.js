@@ -33,15 +33,16 @@ app.post('/hook', (req, res) => {
   try {
     const message = req.body.message || req.body.channel_post
     let name = 'Andrii' // message.from.first_name || message.chat.first_name
+    const chatId = TELEGRAM_CHAT_ID // || message.chat.id;
     const text = message.text || ''
     const reply = message.reply_to_message
 
     if (text.startsWith('/start')) { // init
       sendTelegramMessage(
-        TELEGRAM_CHAT_ID,
+        chatId,
         '*Welcome to Intergram* \n' +
           'Your unique chat id is `' +
-          TELEGRAM_CHAT_ID +
+          chatId +
           '`\n' +
           'Use it to link between the embedded chat and this telegram chat',
         'Markdown'
@@ -52,7 +53,7 @@ app.post('/hook', (req, res) => {
       const socketId = sessions[userId]
 
       if (socketId) {
-        io.to(socketId).emit(TELEGRAM_CHAT_ID + '-' + userId, {
+        io.to(socketId).emit(chatId + '-' + userId, {
           name,
           text,
           from: 'admin',
@@ -63,7 +64,7 @@ app.post('/hook', (req, res) => {
         }
 
         buffer[userId].unshift({
-          TELEGRAM_CHAT_ID,
+          chatId,
           name,
           text,
           from: 'admin',
