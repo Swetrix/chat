@@ -1,8 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Intergram Demo Page</title>
-
+    <title>Swetrix Chat</title>
     <meta charset="utf-8" />
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
@@ -15,41 +14,24 @@
             font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
-        .main {
-            max-width: 600px;
-            margin: 5em auto;
-            padding: 50px;
-            background-color: #fff;
-            border-radius: 1em;
+        .logo {
+            height: 58px;
+            width: auto;
         }
     </style>
-
 </head>
 <body>
 
 <div class="main">
-    <h1>Intergram Demo Page</h1>
-    <p>Free live chat widget linked to your Telegram messenger. </p>
-
-    <p><a href="https://github.com/idoco/intergram">More information...</a></p>
+    <img class="logo" src="https://swetrix.com/assets/logo_blue.svg" alt="">
+    <h1>Hi!</h1>
+    <p>This domain is used as a chat provider for swetrix.com, based on Intergram.</p>
+    <p>
+        <a href="https://github.com/Swetrix/chat">
+            The source code
+        </a>
+    </p>
 </div>
-
-<script>
-    (function(window) {
-        var localTime
-        try {
-            localTime = 'His local time is ' + new Intl.DateTimeFormat([], { timeZone: 'Europe/Kiev', hour: 'numeric' }).format(new Date()) + '.'
-        } catch (error) {
-            localTime = 'He is in Ukraine at the moment.'
-        }
-        window.intergramId = 312940879
-        window.intergramServer = window.location.origin
-        window.intergramCustomizations = {
-            autoResponse: 'Looking for Andrii (this might take a minute).' + localTime
-        }
-    })(window)
-</script>
-<script src="/js/widget.js"></script>
 
 </body>
 </html>
