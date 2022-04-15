@@ -8,8 +8,8 @@ export const desktopWrapperStyle = {
     fontWeight: 'bold',
     background: 'rgb(255, 255, 255)',
     boxSizing: 'content-box',
-    overflow: 'hidden'
-};
+    overflow: 'hidden',
+}
 
 export const desktopClosedWrapperStyleChat = {
     position: 'relative',
@@ -19,8 +19,8 @@ export const desktopClosedWrapperStyleChat = {
     minWidth: '360px',
     boxSizing: 'content-box',
     overflow: 'hidden',
-    minHeight: '90px'
-};
+    minHeight: '90px',
+}
 
 export const mobileClosedWrapperStyle = {
     position: 'relative',
@@ -29,8 +29,8 @@ export const mobileClosedWrapperStyle = {
     zIndex: 2147483647,
     borderRadius: '50%',
     background: 'rgb(255, 255, 255)',
-    boxSizing: 'content-box'
-};
+    boxSizing: 'content-box',
+}
 
 export const mobileOpenWrapperStyle = {
     position: 'fixed',
@@ -43,8 +43,8 @@ export const mobileOpenWrapperStyle = {
     height: '100%',
     background: 'rgb(255, 255, 255)',
     overflowY: 'visible',
-    boxSizing: 'content-box'
-};
+    boxSizing: 'content-box',
+}
 
 export const desktopTitleStyle = {
     height: '40px',
@@ -54,8 +54,9 @@ export const desktopTitleStyle = {
     justifyContent: 'space-between',
     padding: '5px 0 5px 20px',
     color: '#fff',
-    cursor: 'pointer'
-};
+    cursor: 'pointer',
+    alignItems: 'center',
+}
 
 export const mobileTitleStyle = {
     height: 52,
@@ -64,5 +65,5 @@ export const mobileTitleStyle = {
     borderRadius: '50%',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
-};
+    alignItems: 'center',
+}
