@@ -64,7 +64,7 @@ export default class ChatTitleMsg extends Component {
                         :
                         <img
                             src={conf.closedChatAvatarUrl}
-                            alt=" "
+                            alt=""
                             style={{
                                 width: '100%',
                                 height: 'auto',
