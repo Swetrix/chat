@@ -2,7 +2,7 @@ export const defaultConfiguration = {
   titleClosed: 'Re-open chat',
   titleOpen: 'Ask me anything',
   closedStyle: 'button', // button or chat
-  cookieExpiration: 1, // in days. Once opened, closed chat title will be shown as button (when closedStyle is set to 'chat')
+  cookieExpiration: 20, // in days. Once opened, closed chat title will be shown as button (when closedStyle is set to 'chat')
   introMessage: 'Hi! How can we help you?',
   introMessageBalloon: 'Hi! How can we help?',
   closedChatAvatarUrl: 'https://swetrix.com/assets/andrii-120px.png',
